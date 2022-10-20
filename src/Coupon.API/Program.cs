@@ -46,7 +46,7 @@ app.MapGet("/api/coupon/{id:int}", (IMapper _mapper, int id) =>
 {
     ApiResponse response = new()
     {
-        StatusCode = HttpStatusCode.BadRequest
+        StatusCode = HttpStatusCode.NotFound
     };
 
     var coupon = CouponStore.couponList.FirstOrDefault(coupon => coupon.Id == id);
@@ -55,7 +55,7 @@ app.MapGet("/api/coupon/{id:int}", (IMapper _mapper, int id) =>
     {
         response.Errors.Add($"Coupon ID {id} doesn't exist.");
         
-        return Results.BadRequest(response);
+        return Results.NotFound(response);
     }
 
     CouponDTO couponDto = _mapper.Map<CouponDTO>(coupon);
@@ -66,7 +66,8 @@ app.MapGet("/api/coupon/{id:int}", (IMapper _mapper, int id) =>
     return Results.Ok(response);
 })
 .Produces<ApiResponse>(200)
-.Produces(400);
+.Produces(400)
+.Produces(404);
 
 app.MapPost("/api/coupon", async (IMapper _mapper, IValidator<CouponCreateDTO> _validator, CouponCreateDTO couponCreateDto) =>
 {
@@ -79,10 +80,7 @@ app.MapPost("/api/coupon", async (IMapper _mapper, IValidator<CouponCreateDTO> _
 
     if (!validationResult.IsValid)
     {
-        validationResult.Errors.ForEach(error =>
-        {
-            response.Errors.Add(error.ToString());
-        });
+        response.Errors = validationResult.Errors.Select(error => error.ToString()).ToList();
 
         return Results.BadRequest(response);
     }
@@ -115,14 +113,69 @@ app.MapPost("/api/coupon", async (IMapper _mapper, IValidator<CouponCreateDTO> _
 .Produces(400)
 .Produces(500);
 
-app.MapPut("/api/coupon", () =>
+app.MapPut("/api/coupon/{id:int}", async (IValidator<CouponCreateDTO> _validator, int id, CouponUpdateDTO couponUpdateDto) =>
 {
+    ApiResponse response = new();
 
-});
+    ValidationResult validationResult = await _validator.ValidateAsync(couponUpdateDto);
+
+    if (!validationResult.IsValid)
+    {
+        response.Errors = validationResult.Errors.Select(error => error.ToString()).ToList();
+        response.StatusCode = HttpStatusCode.BadRequest;
+
+        return Results.BadRequest(response);
+    }
+
+    var coupon = CouponStore.couponList.FirstOrDefault(coupon => coupon.Id == id);
+
+    if (coupon == null)
+    {
+        response.Errors.Add($"Coupon ID {id} doesn't exist.");
+        response.StatusCode = HttpStatusCode.NotFound;
+
+        return Results.NotFound(response);
+    }
+
+    coupon.Name = couponUpdateDto.Name;
+    coupon.Percent = couponUpdateDto.Percent;
+    coupon.IsActive = couponUpdateDto.IsActive;
+    coupon.Updated = DateTime.Now;
+
+    return Results.NoContent();
+})
+.Produces(204)
+.Produces<ApiResponse>(400)
+.Produces<ApiResponse>(404);
 
 app.MapDelete("/api/coupon/{id:int}", (int id) =>
 {
+    ApiResponse response = new();
 
-});
+    if (id < 1)
+    {
+        response.Errors.Add("Coupon ID is not valid.");
+        response.StatusCode = HttpStatusCode.BadRequest;
+
+        return Results.BadRequest(response);
+    }
+
+    var coupon = CouponStore.couponList.FirstOrDefault(coupon => coupon.Id == id);
+
+    if (coupon == null)
+    {
+        response.Errors.Add($"Coupon ID {id} doesn't exist.");
+        response.StatusCode = HttpStatusCode.NotFound;
+
+        return Results.NotFound(response);
+    }
+
+    CouponStore.couponList.RemoveAll(coupon => coupon.Id == id);
+
+    return Results.NoContent();
+})
+.Produces(204)
+.Produces<ApiResponse>(400)
+.Produces<ApiResponse>(404);
 
 app.Run();
