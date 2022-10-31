@@ -25,6 +25,7 @@ namespace Coupon.API.Endpoints
             .Produces(500);
 
             app.MapPut("/api/coupon/{id:int}", UpdateCoupon)
+            .Accepts<CouponUpdateDTO>("application/json")
             .Produces(204)
             .Produces<ApiResponse>(400)
             .Produces<ApiResponse>(404);
