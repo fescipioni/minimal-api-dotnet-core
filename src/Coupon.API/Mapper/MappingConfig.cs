@@ -8,6 +8,10 @@ namespace Coupon.API.Mapper
         {
             CreateMap<Models.Coupon, DTO.CouponDTO>().ReverseMap();
             CreateMap<Models.Coupon, DTO.CouponCreateDTO>().ReverseMap();
+
+            CreateMap<Models.LocalUser, DTO.LocalUserDTO>().ReverseMap();
+            CreateMap<Models.LocalUser, DTO.RegistrationRequestDTO>().ReverseMap();
+            CreateMap<Models.LocalUser, DTO.LoginRequestDTO>().ReverseMap();
         }
     }
 }

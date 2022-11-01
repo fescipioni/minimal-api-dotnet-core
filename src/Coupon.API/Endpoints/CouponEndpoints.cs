@@ -11,7 +11,8 @@ namespace Coupon.API.Endpoints
     {
         public static void ConfigureCouponEndpoints(this WebApplication app)
         {
-            app.MapGet("/api/coupon", GetAllCoupons).Produces<ApiResponse>(200); // .WithName("GetCoupon");
+            app.MapGet("/api/coupon", GetAllCoupons).Produces<ApiResponse>(200) // .WithName("GetCoupon");
+            .RequireAuthorization(); 
 
             app.MapGet("/api/coupon/{id:int}", GetCoupon)
             .Produces<ApiResponse>(200)

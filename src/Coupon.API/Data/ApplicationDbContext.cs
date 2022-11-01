@@ -10,6 +10,7 @@ namespace Coupon.API.Data
         }
 
         public DbSet<Models.Coupon> Coupons { get; set; }
+        public DbSet<Models.LocalUser> LocalUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
