@@ -19,6 +19,15 @@ namespace Coupon.API.Endpoints
             .Produces<ApiResponse>(200)
             .Produces(400)
             .Produces(404);
+            // Custom filters available for .NET7
+            //.AddFilter(async (context, next) =>
+            //{
+            //    var id = context.GetArgument<int>(2);
+
+            //    if (id == 0) return Results.BadRequest("Cannot have 0 an ID.");
+
+            //    return await next(context);
+            //};
 
             app.MapPost("/api/coupon", CreateCoupon)
             .Accepts<CouponCreateDTO>("application/json")
