@@ -3,6 +3,7 @@ using Coupon.API.DTO;
 using Coupon.API.Repository.IRepository;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
 namespace Coupon.API.Endpoints
@@ -52,6 +53,7 @@ namespace Coupon.API.Endpoints
             return Results.Ok(response);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         private async static Task<IResult> GetCoupon(ICouponRepository _couponRepository, IMapper _mapper, int id)
         {
             ApiResponse response = new()
@@ -76,6 +78,7 @@ namespace Coupon.API.Endpoints
             return Results.Ok(response);
         }
 
+        [Authorize(Roles = "admin")]
         private async static Task<IResult> CreateCoupon(ICouponRepository _couponRepository, IMapper _mapper, IValidator<CouponCreateDTO> _validator, CouponCreateDTO couponCreateDto)
         {
             ApiResponse response = new()
@@ -115,6 +118,7 @@ namespace Coupon.API.Endpoints
             return Results.Created($"/api/coupon/{dto.Id}", response);
         }
 
+        [Authorize]
         private async static Task<IResult> UpdateCoupon(ICouponRepository _couponRepository, IValidator<CouponCreateDTO> _validator, int id, CouponUpdateDTO couponUpdateDto)
         {
             ApiResponse response = new();
@@ -149,6 +153,7 @@ namespace Coupon.API.Endpoints
             return Results.NoContent();
         }
 
+        [Authorize
         private async static Task<IResult> RemoveCoupon(ICouponRepository _couponRepository, int id)
         {
             ApiResponse response = new();
