@@ -153,7 +153,7 @@ namespace Coupon.API.Endpoints
             return Results.NoContent();
         }
 
-        [Authorize
+        [Authorize]
         private async static Task<IResult> RemoveCoupon(ICouponRepository _couponRepository, int id)
         {
             ApiResponse response = new();

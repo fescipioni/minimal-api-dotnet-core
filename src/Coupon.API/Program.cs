@@ -92,6 +92,16 @@ app.UseAuthorization();
 app.ConfigureCouponEndpoints();
 app.ConfigureAuthEndpoints();
 
+// Feature available on NET7.
+//app.MapGet("/api/coupon/special", ([AsParameters] CouponRequestDTO request, ApplicationDbContext _db) => {
+//    if (!string.IsNullOrEmpty(request.CouponName))
+//    {
+//        return _db.Coupons.Where(coupon => coupon.Name.Contains(request.CouponName)).Skip((request.Page - 1) * request.PageSize).Take(request.PageSize);
+//    }
+
+//    return _db.Coupons.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize);
+//});
+
 app.UseHttpsRedirection();
 
 app.Run();
